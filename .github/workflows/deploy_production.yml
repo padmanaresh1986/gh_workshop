@@ -1,4 +1,4 @@
-name: Deploy to OpenShift Staging
+name: Deploy to OpenShift Production
 
 on:
   workflow_run:
