@@ -161,7 +161,7 @@ jobs:
         if: always()
         with:
           name: pitest-report
-          path: build/reports/pitest/**  # Gradle PITest plugin default output directory
+          path: rules-engine/build/reports/pitest/**  # Gradle PITest plugin default output directory
 
   code-coverage-test:
     name: Generate Code Coverage Report
@@ -188,10 +188,40 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: build/reports/jacoco/test/html/**
+          path: rules-engine/build/reports/jacoco/test/html/**
 
       - name: Upload JaCoCo XML
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-xml
-          path: build/reports/jacoco/test/jacocoTestReport.xml
+          path: rules-engine/build/reports/jacoco/test/jacocoTestReport.xml
+
+  dependency-tree:
+    name: Generate Dependency Tree
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Generate Dependency Tree
+        working-directory: rules-engine
+        run: |
+          chmod +x gradlew
+          ./gradlew dependencies --configuration runtimeClasspath > dependency_tree.txt
+          
+      - name: Upload Dependency Tree
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-tree
+          path: rules-engine/dependency_tree.txt
