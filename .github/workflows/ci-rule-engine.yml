@@ -120,7 +120,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: quay.io/${{ secrets.QUAY_USERNAME }}/business-rule-processor
+          images: quay.io/${{ secrets.QUAY_USERNAME }}/rules-engine
           tags: |
             latest
             v1.0.${{ github.run_number }}
@@ -135,7 +135,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   mutation-test:
-    name: Mutation Testing with PITest
+    name: Generate PITest Reports
     needs: test
     runs-on: ubuntu-latest
 
@@ -151,8 +151,10 @@ jobs:
           cache: gradle
 
       - name: Run PITest Mutation Analysis
+        working-directory: rules-engine
         run: |
-          ./gradlew test pitest
+            chmod +x gradlew
+            ./gradlew test pitest
 
       - name: Upload PITest Report
         uses: actions/upload-artifact@v4
@@ -162,7 +164,8 @@ jobs:
           path: build/reports/pitest/**  # Gradle PITest plugin default output directory
 
   code-coverage-test:
-    name: Run Tests with Coverage
+    name: Generate Code Coverage Report
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -176,7 +179,10 @@ jobs:
           cache: gradle
 
       - name: Run Tests with Coverage
-        run: ./gradlew clean test jacocoTestReport
+        working-directory: rules-engine
+        run: |
+            chmod +x gradlew
+            ./gradlew clean test jacocoTestReport
 
       - name: Upload JaCoCo Report
         uses: actions/upload-artifact@v4
