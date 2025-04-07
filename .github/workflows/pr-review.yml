@@ -20,7 +20,7 @@ jobs:
         run: pip install openai requests PyGithub
 
       - name: Run AI Review Script
-        run: python .github/scripts/ai_review.py
+        run: python .github/workflows/scripts/ai_review.py
         env:
           AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
