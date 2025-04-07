@@ -1,0 +1,23 @@
+name: Hello World Workflow  # Workflow name
+
+on: [push]  # Trigger: Runs on every git push
+
+jobs:
+  greet:  # Job ID
+    name: Print Greetings
+    runs-on: ubuntu-latest  # Runner (GitHub-hosted Linux machine)
+    
+    steps:
+      # Step 1: Checkout code (uses a pre-built Action)
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Reusable Action
+
+      # Step 2: Run a custom shell command
+      - name: Say Hello
+        run: echo "Hello, World! 🚀"
+
+      # Step 3: Use another Action to log a message
+      - name: Celebrate
+        uses: actions/github-script@v6
+        with:
+          script: console.log('Workflow completed!')
