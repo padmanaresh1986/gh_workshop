@@ -1,0 +1,62 @@
+name: Deploy to OpenShift Staging
+
+on:
+  workflow_run:
+    workflows: ["CI Build"]
+    types:
+      - completed
+
+env:
+  APP_NAME: "rules-engine-staging"
+  CONTAINER_NAME: "rules-engine"
+  IMAGE_NAME: "quay.io/${{ secrets.QUAY_USERNAME }}/rules-engine:v1.0.${{ github.event.workflow_run.run_number }}"
+  NAMESPACE: "${{ secrets.OPENSHIFT_NAMESPACE }}"
+  REPLICAS: "2"
+  PORT: "8080"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: Staging
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Install OpenShift CLI (oc)
+      - name: Install OpenShift CLI
+        run: |
+          sudo curl -L https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz | sudo tar -xz -C /usr/local/bin
+
+      # Step 3: Install Ansible
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      # Step 4: Set up environment variables
+      - name: Set Environment Variables
+        run: |
+          echo "APP_NAME=${{ env.APP_NAME }}" >> $GITHUB_ENV
+          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME  }}" >> $GITHUB_ENV
+          echo "IMAGE_URL=${{ env.IMAGE_NAME }}" >> $GITHUB_ENV
+          echo "PROJECT_NAME=${{ env.NAMESPACE }}" >> $GITHUB_ENV
+          echo "REPLICAS=${{ env.REPLICAS }}" >> $GITHUB_ENV
+          echo "PORT=${{ env.PORT }}" >> $GITHUB_ENV
+          echo "OC_TOKEN=${{ secrets.OPENSHIFT_TOKEN }}" >> $GITHUB_ENV
+          echo "OC_SERVER=${{ secrets.OPENSHIFT_SERVER }}" >> $GITHUB_ENV
+
+      # Step 5: Run the Ansible playbook
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook .github/workflows/scripts/ansible_deploy.yml \
+            -e app_name=$APP_NAME \
+            -e container_name=$CONTAINER_NAME \
+            -e image_url=$IMAGE_URL \
+            -e project_name=$PROJECT_NAME \
+            -e oc_token=$OC_TOKEN \
+            -e oc_server=$OC_SERVER \
+            -e replicas=$REPLICAS \
+            -e port=$PORT
