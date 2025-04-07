@@ -29,7 +29,9 @@ jobs:
 
       - name: Run Gradle Tests
         working-directory: rules-engine
-        run: ./gradlew test
+        run: |
+            chmod +x gradlew
+            ./gradlew test
 
   build:
     name: Build Artifact
