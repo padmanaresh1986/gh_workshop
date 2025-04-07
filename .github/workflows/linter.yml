@@ -1,0 +1,40 @@
+name: Python Linter
+
+on:
+  push:
+    paths:
+      - ".github/workflows/linter.yml"
+      - "python/**"
+  workflow_dispatch:
+
+jobs:
+  lint-python:
+    name: Lint Python code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run Super-Linter (Python only)
+        uses: github/super-linter@v7
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WORKSPACE: ./python
+          VALIDATE_ALL_CODEBASE: false  # Only check files in the workspace
+          # Only enable Python validation
+          VALIDATE_PYTHON: true
+          
+      - name: Print the contents
+        if: always() 
+        run: ls -lrt
+
+      - name: Upload Linter Reports
+        uses: actions/upload-artifact@v4
+        if: always() 
+        with:
+          name: super-linter-results
+          path: |
+            super-linter.log
+            github/logs/super-linter.log
+            super-linter-output/*
