@@ -7,6 +7,7 @@ REPO_NAME = os.getenv("GITHUB_REPOSITORY")
 PR_NUMBER = int(os.getenv("PR_NUMBER"))
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 AIT_API_KEY = os.getenv("AIT_API_KEY")
+REVIEW_LABEL = "Review Required"  # Label to add to PR
 
 # Initialize GitHub client
 gh = Github(GITHUB_TOKEN)
@@ -75,6 +76,20 @@ def post_comment(body):
     except Exception as e:
         print("❌ Error posting comment:", e)
 
+def add_review_label():
+    try:
+        pr = repo.get_pull(PR_NUMBER)
+        # Check if label exists, create if not
+        try:
+            repo.get_label(REVIEW_LABEL)
+        except:
+            repo.create_label(REVIEW_LABEL, "FFA500", "PR needs review")
+        
+        pr.add_to_labels(REVIEW_LABEL)
+        print(f"✅ Added '{REVIEW_LABEL}' label to PR.")
+    except Exception as e:
+        print(f"❌ Error adding label '{REVIEW_LABEL}':", e)
+
 if __name__ == "__main__":
     print("🚀 Fetching diff...")
     diff = get_diff()
@@ -86,3 +101,5 @@ if __name__ == "__main__":
         feedback = get_review_comments(diff)
         print("💬 Posting comment to PR...")
         post_comment(feedback)
+        print("🏷️ Adding review label...")
+        add_review_label()
