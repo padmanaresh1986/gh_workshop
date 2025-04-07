@@ -3,7 +3,7 @@ name: Application build
 on:
   push:
     paths:
-      - ".github/workflows/build-application.yml"
+      - ".github/workflows/application-build.yml"
       - "demo/**"
   workflow_dispatch:
 
@@ -27,5 +27,5 @@ jobs:
       # Build project using Maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-        working-directory: demo
+        #working-directory: demo
    
