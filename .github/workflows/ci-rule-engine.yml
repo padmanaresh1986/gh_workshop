@@ -128,8 +128,8 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockerfile
+          context: rules-engine/
+          file: rules-engine/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
