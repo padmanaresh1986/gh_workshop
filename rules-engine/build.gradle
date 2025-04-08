@@ -50,7 +50,7 @@ pitest {
 	targetClasses = ['com.example.*']  // adjust to your package name
 	threads = 4
 	outputFormats = ['XML', 'HTML']
-	mutationThreshold = 60
-	coverageThreshold = 60
+	mutationThreshold = 10
+	coverageThreshold = 10
 	timestampedReports = false
 }

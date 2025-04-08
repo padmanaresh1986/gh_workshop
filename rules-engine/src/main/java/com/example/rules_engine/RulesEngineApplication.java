@@ -9,9 +9,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class RulesEngineApplication{
+public class RulesEngineApplication implements  CommandLineRunner{
 
 	public static void main(String[] args) {
 		SpringApplication.run(RulesEngineApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		String application_name = "Rule Engine";
+		System.out.println("should not use sys outs , use loggers instead");
 	}
 }
