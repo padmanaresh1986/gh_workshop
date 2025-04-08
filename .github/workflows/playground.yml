@@ -5,7 +5,7 @@ on:
 
 jobs:
   inspect-java:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Run a multi-line script
         run: |
